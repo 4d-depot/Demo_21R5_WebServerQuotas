@@ -1,0 +1,14 @@
+[
+  {
+    "class": "DemoHandler",
+    "method": "handle",
+    "regexPattern": "/runDemo",
+    "verbs": "get, post"
+  },
+  {
+    "class": "DemoHandler",
+    "method": "createEntitySetsOnNewSession",
+    "regexPattern": "/createEntitySet",
+    "verbs": "get"
+  }
+]

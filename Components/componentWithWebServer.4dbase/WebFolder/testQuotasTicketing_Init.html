@@ -1,0 +1,671 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ticketing — 4D Quotas Demo</title>
+<style>
+  :root{
+    --bg:#fafaf8;
+    --panel:#ffffff;
+    --border:#e2e0da;
+    --text:#2b2b28;
+    --muted:#767268;
+    --accent:#1764ac;
+    --accent-dark:#204d37;
+    --warn:#b3492f;
+    --ok:#2f6f4f;
+    --select:#44a273;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;
+    background:var(--bg);
+    color:var(--text);
+    line-height:1.4;
+  }
+  header{
+    padding:28px 32px 24px;
+    max-width:1600px;
+    margin:0 auto;
+  }
+  header h1{
+    margin:8px 0 12px;
+    font-size:32px;
+    line-height:1.15;
+    font-weight:650;
+    color:var(--text);
+  }
+  header p{
+    margin:0;
+    color:var(--muted);
+    font-size:14px;
+  }
+  main{
+    max-width:1600px;
+    width:100%;
+    margin:0 auto;
+    padding:0 32px 64px;
+    display:grid;
+    grid-template-columns:minmax(0, 1.5fr) minmax(340px, 1fr);
+    align-items:start;
+    gap:20px;
+  }
+  .main-content{
+    display:grid;
+    gap:20px;
+    min-width:0;
+  }
+  .results-section{
+    grid-column:2;
+    grid-row:1;
+    position:sticky;
+    top:20px;
+  }
+  .single-request-columns{
+    display:grid;
+    grid-template-columns:repeat(2, minmax(0, 1fr));
+    gap:20px;
+  }
+  .burst-columns{
+    display:grid;
+    grid-template-columns:repeat(2, minmax(0, 1fr));
+    gap:20px;
+  }
+  @media (max-width:1000px){
+    main{grid-template-columns:1fr;}
+    .results-section{
+      grid-column:1;
+      grid-row:auto;
+      position:static;
+    }
+  }
+  @media (max-width:700px){
+    header{padding:10px 16px 4px;}
+    header h1{width:100%; margin-left:0;}
+    main{padding:0 16px 40px;}
+    main{grid-template-columns:1fr;}
+    .results-section{
+      grid-column:1;
+      grid-row:auto;
+    }
+    .single-request-columns,
+    .burst-columns{grid-template-columns:1fr;}
+  }
+  section{
+    background:var(--panel);
+    border:1px solid var(--border);
+    border-radius:8px;
+    padding:18px 15px;
+    min-width:0;
+  }
+  section.send-data-highlight{
+    background:#f0faf4;
+    border:2px solid var(--select);
+  }
+  section.request-data-highlight{
+    background:#f0faf4;
+    border:2px solid var(--select);
+  }
+  section.sessions-highlight{
+    background:#f0faf4;
+    border:2px solid var(--select);
+  }
+  section.entity-sets-highlight{
+    background:#f0faf4;
+    border:2px solid var(--select);
+  }
+  section.send-request-highlight{
+    background:#f0faf4;
+    border:2px solid var(--select);
+  }
+  section.dimmed{
+    opacity:.5;
+  }
+  section h2{
+    margin:0 0 4px;
+    font-size:18px;
+    font-weight:600;
+  }
+ section p.info{
+    font-size:14px;
+    font-weight:400;
+    color:var(--muted);
+    margin: 10px 0 0 0px;
+  }
+
+  .info-icon{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    width:16px;
+    height:16px;
+    margin-right:5px;
+    border:1px solid #44a273;
+    border-radius:50%;
+    color:#44a273;
+    font-size:11px;
+    font-weight:700;
+    line-height:1;
+    vertical-align:middle;
+    cursor:help;
+  }
+
+  .sessions-section{
+    display:flex;
+    flex-direction:column;
+    align-items:stretch;
+    gap:16px;
+    min-width:0;
+  }
+  .sessions-section h2{
+    margin:0;
+  }
+  .sessions-section .row{
+    flex-wrap:wrap;
+    margin:0;
+    gap:8px;
+  }
+
+ section p.hint{
+   font-weight:600;
+    color:var(--ok);
+    font-size:16px;
+    display:flex;
+    justify-content:center;
+    width:100%;
+    margin: 10px;
+  }
+  .row{
+    display:flex;
+    flex-wrap:wrap;
+    align-items:center;
+    gap:10px;
+    margin-bottom:10px;
+  }
+  
+  .row:last-child{margin-bottom:0;}
+  label{
+    font-size:15px;
+    color:var(--muted);
+    display:flex;
+    align-items:center;
+    gap:6px;
+  }
+  
+  .inputData{
+    font-size:15px;
+    color:var(--text);
+    font-weight:600;
+  }
+  
+  .count{
+    font-size:15px;
+    color:var(--text);
+    font-weight:600;
+    display:flex;
+    margin-left:-6px;
+  }
+  
+   .countKO{
+    font-size:15px;
+    color:var(--warn);
+    font-weight:600;
+    display:flex;
+    margin-left:-6px;
+  }
+  
+   .countOK{
+    font-size:15px;
+    color:var(--ok);
+    font-weight:600;
+    display:flex;
+    margin-left:-6px;
+  }
+  
+  input[type=number],
+  input[type=text]{
+    width:90px;
+    padding:5px 7px;
+    border:1px solid var(--border);
+    border-radius:5px;
+    font-size:13px;
+  }
+  select{
+    padding:5px 7px;
+    border:1px solid var(--border);
+    border-radius:5px;
+    font-size:13px;
+    background:#fff;
+  }
+  input[type=checkbox]{margin: 0}
+  label.new-session-highlight{
+    color:#c0392b;
+  }
+  button{
+    border:1px solid var(--accent);
+    background:var(--accent);
+    color:#fff;
+    padding:7px 14px;
+    margin:0;
+    border-radius:5px;
+    font-size:13px;
+    cursor:pointer;
+  }
+  button.secondary{
+    background:#fff;
+    color:var(--accent);
+    border-color:var(--accent);
+  }
+  button.secondary:hover{background:#f2f1ed;}
+  button:disabled{
+    opacity:.5;
+    cursor:not-allowed;
+  }
+  .stats{
+    display:flex;
+    gap:24px;
+    flex-wrap:wrap;
+    font-size:13px;
+  }
+  .stats div span{
+    display:block;
+    font-size:20px;
+    font-weight:600;
+  }
+  .current-values{
+    display:flex;
+    flex-wrap:wrap;
+    align-items:center;
+    gap:16px;
+  }
+  .current-values-header{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    flex:1 0 100%;
+    gap:16px;
+  }
+  .send-request-section{
+    display:flex;
+    flex-direction:column;
+    align-items:stretch;
+    gap:16px;
+    min-width:0;
+  }
+  .send-request-section h2{
+    margin:0;
+  }
+  .send-request-section .row{
+    justify-content:space-between;
+    margin:0;
+  }
+  .entity-sets-section .row{
+    flex-wrap:nowrap;
+    white-space:nowrap;
+  }
+  .entity-sets-section{
+    display:flex;
+    flex-direction:column;
+    align-items:stretch;
+    gap:16px;
+    min-width:0;
+  }
+  .entity-sets-section h2{
+    margin:0;
+  }
+  .current-values h2{
+    flex:0 0 auto;
+    margin:0;
+  }
+  .current-values .stats{
+    flex:1 1 auto;
+    flex-wrap:wrap;
+    min-width:0;
+    margin-bottom:0;
+    overflow:visible;
+    white-space:normal;
+  }
+  .current-values .stats label,
+  .current-values .stats span{
+    flex:0 0 auto;
+  }
+
+  #log{
+    background:#1e1e1c;
+    color:#d9d7cf;
+    border-radius:6px;
+    padding:10px 12px;
+    font-family:ui-monospace,Menlo,Consolas,monospace;
+    font-size:12px;
+    height:500px;
+    overflow-y:auto;
+    white-space:pre-wrap;
+  }
+  #log .l429{color:#e08a6d;}
+  #log .lok{color:#8fbf9f;}
+  #log .lerr{color:#ff0000;font-weight:bold;}
+  .footer-actions{
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    flex-wrap:wrap;
+    gap:10px;
+    margin-top:16px;
+    width:100%;
+  }
+  
+  #quotas{
+    background:var(--panel);
+    border-bottom:1px solid var(--border);
+    padding:10px 32px;
+  }
+  #quotas .quotas-title{
+    font-size:24px;
+    font-weight:600;
+    color:var(--accent);
+    margin-bottom:8px;
+  }
+  #quotas .quotas-row{
+    display:flex;
+    flex-wrap:wrap;
+    gap:0;
+  }
+  #quotas .quota{
+    flex:1 1 auto;
+    min-width:110px;
+    padding:4px 16px;
+    border-right:1px solid var(--border);
+    text-align:center;
+  }
+  #quotas .quota:last-child{border-right:none;}
+  #quotas .quota .label{
+    display:block;
+    font-size:11px;
+    color:var(--muted);
+    text-transform:uppercase;
+    letter-spacing:.02em;
+    margin-bottom:2px;
+  }
+  #quotas .quota .value{
+    display:block;
+    font-size:16px;
+    font-weight:600;
+    color:var(--text);
+  }
+  @media (max-width:560px){
+    .single-request-columns,
+    .burst-columns{grid-template-columns:1fr;}
+    section{padding:15px 12px;}
+    .sessions-section,
+    .entity-sets-section,
+    .current-values{align-items:flex-start;}
+    .sessions-section .row,
+    .entity-sets-section .row{flex-wrap:wrap; white-space:normal;}
+    .current-values{display:block;}
+    .current-values-header,
+    .current-values .stats{width:100%;}
+    #log{height:360px; font-size:11px;}
+  }
+  html{scroll-behavior:smooth;}
+  section[id]{scroll-margin-top:20px;}
+  .eyebrow,
+  .chapter{
+    color:var(--accent);
+    font-size:12px;
+    font-weight:700;
+    letter-spacing:.06em;
+    text-transform:uppercase;
+  }
+  .intro{max-width:820px;}
+  header .intro{font-size:16px; color:var(--text);}
+  .scenario-nav{
+    display:flex;
+    flex-wrap:wrap;
+    gap:8px;
+    margin-top:20px;
+  }
+  .scenario-nav a{
+    color:var(--accent);
+    background:var(--panel);
+    border:1px solid var(--border);
+    border-radius:20px;
+    padding:7px 12px;
+    font-size:13px;
+    text-decoration:none;
+  }
+  .scenario-nav a:hover{border-color:var(--accent);}
+  a:focus-visible, button:focus-visible, input:focus-visible{
+    outline:3px solid var(--accent);
+    outline-offset:3px;
+  }
+  .scenario{
+    border-left:3px solid var(--select);
+    padding-left:12px;
+    margin:12px 0 16px;
+    font-size:14px;
+    color:var(--text);
+  }
+  .technical{
+    color:var(--muted);
+    font-size:12px;
+    margin:10px 0;
+    overflow-wrap:anywhere;
+  }
+  code{font-family:ui-monospace,Menlo,Consolas,monospace;}
+  .demo-note{
+    padding:14px 16px;
+    background:#edf4fb;
+    border-radius:6px;
+    font-size:13px;
+  }
+  .demo-note p{margin:0 0 8px;}
+  .demo-note p:last-child{margin:0;}
+  .demo-note a{color:var(--accent);}
+  .results-section h2{margin-bottom:12px;}
+  .results-section .scenario{margin-bottom:16px;}
+  .results-section .stats{gap:10px 18px;}
+  .results-section #log{height:clamp(220px, 36vh, 500px);}
+  .sessions-section .row,
+  .entity-sets-section .row{flex-wrap:wrap; white-space:normal;}
+  .chapter{margin:0 0 6px;}
+  @media (prefers-reduced-motion:reduce){
+    html{scroll-behavior:auto;}
+  }
+</style>
+</head>
+<body>
+
+
+<header>
+  <p class="eyebrow">4D Web Server · Quotas demo · 5 minutes</p>
+  <h1>10 AM: ticket sales open.<br>Keep the server available.</h1>
+  <p class="intro">Visitors are rushing to book their seats. A script keeps refreshing availability, while partners exchange data. Set usage limits to keep this activity under control.</p>
+  <nav class="scenario-nav" aria-label="Demo walkthrough">
+    <a href="#visitor">1. A visitor</a>
+    <a href="#refresh">2. Too many requests</a>
+    <a href="#data">3. Too much data</a>
+    <a href="#sessions">4. The rush</a>
+    <a href="#entity-sets">5. REST resources</a>
+  </nav>
+</header>
+
+<main>
+  <div class="main-content">
+  <section class="current-values">
+    <div class="current-values-header">
+      <h2>Server activity</h2>
+      <button id="btnRefreshSessions" type="button">Refresh</button>
+    </div>
+    <div class="stats row">
+      <label>Active sessions:</label><span id="nbSessions" class="count">0</span>
+      <label>Including guest sessions:</label><span id="nbGuestSessions" class="count">0</span>
+      <label>REST entity sets:</label><span id="nbEntitySets" class="count">0</span>
+    </div>
+    <div class="demo-note">
+      <p><strong>A test bench, not a real ticketing system.</strong> Requests simulate the scenarios below. Quotas are those configured on the 4D server; this page does not change them.</p>
+      <p><strong>Two budgets:</strong> per session for each visitor, and global for the entire server. Default session values apply to new sessions only. Scalable sessions must be enabled.</p>
+    </div>
+  </section>
+
+  <section class="send-request-section" id="visitor">
+    <div>
+      <p class="chapter">1 · Normal usage</p>
+      <h2>A visitor checks seat availability</h2>
+      <p class="scenario">Before the traffic spike, check that a normal request is accepted. The result appears in the log.</p>
+      <p class="technical">Technical test: one GET request, using the current session.</p>
+    </div>
+    <div class="row">
+      <label>Simulate a seat lookup</label>
+      <button id="btnSendRequest" type="button">View available seats</button>
+    </div>
+  </section>
+
+  <div class="burst-columns" id="refresh">
+    <section class="send-data-section">
+      <p class="chapter">2 · Too many requests · POST variant</p>
+      <h2>An integration sends requests in a loop</h2>
+      <p class="scenario">An event organizer's software syncs its data too often. Simulate repeated submissions.</p>
+      <p class="technical">POST burst · <code>nbRequestsPerMin</code> / <code>nbRequestsPerMinPerSession</code> and incoming data quotas.</p>
+      <div class="row">
+        <label>One submission every <input style="text-align:center;" class="inputData" type="number" id="burstPostDelay" value="1" min="1"> seconds</label>
+        <label>Number of submissions <input style="text-align:center;" class="inputData" type="number" id="burstPostCount" value="60" min="1"></label>
+        <label>Payload size <input style="text-align:center;" class="inputData" type="number" id="burstPostSize" value="1000" min="1"> bytes</label>
+      </div>
+      <p><label><input type="checkbox" id="burstPostNewSession">New session for each request</label></p>
+      <div class="row">
+        <div class="footer-actions">
+          <button id="btnBurstPostStart">Start submissions</button>
+          <button id="btnBurstPostStop" class="secondary" disabled>Stop</button>
+        </div>
+        <p class="hint" id="burstPostProgress" role="status"></p>
+      </div>
+      <p class="info">The incoming quota counts the request body and HTTP headers, not just the size entered here.</p>
+    </section>
+
+    <section class="request-data-section">
+      <p class="chapter">2 · Too many requests · Main demo</p>
+      <h2>A script keeps refreshing availability</h2>
+      <p class="scenario">A visitor automates seat lookups. Exceed the configured request budget and watch for 429 responses.</p>
+      <p class="technical">GET burst · <code>nbRequestsPerMin</code> / <code>nbRequestsPerMinPerSession</code> and outgoing data quotas.</p>
+      <div class="row">
+        <label>One lookup every <input style="text-align:center;" class="inputData" type="number" id="burstGetDelay" value="1" min="1"> seconds</label>
+        <label>Number of lookups <input style="text-align:center;" class="inputData" type="number" id="burstGetCount" value="60" min="1"></label>
+        <label>Response size <input style="text-align:center;" class="inputData" type="number" id="burstGetSize" value="1000" min="1"> bytes</label>
+      </div>
+      <p><label><input type="checkbox" id="burstGetNewSession">New session for each request</label></p>
+      <div class="row">
+        <div class="footer-actions">
+          <button id="btnBurstGetStart">Simulate refresh loop</button>
+          <button id="btnBurstGetStop" class="secondary" disabled>Stop</button>
+        </div>
+        <p class="hint" id="burstGetProgress" role="status"></p>
+      </div>
+      <p class="info">To test a single visitor's budget, keep the same session. Other quotas may also stop the test.</p>
+    </section>
+  </div>
+
+  <div class="single-request-columns" id="data">
+    <section class="send-data-section">
+      <p class="chapter">3 · Incoming data volume</p>
+      <h2>An organizer submits data</h2>
+      <p class="scenario">A single request can carry a large payload. Simulate an organizer submitting data.</p>
+      <p class="technical">Single POST · <code>inBytesPerMin</code> / <code>inBytesPerMinPerSession</code>.</p>
+      <div class="row">
+          <label>Send <input style="text-align:center;" class="inputData" type="number" id="bodySize" value="1000" min="1"> bytes of data</label>
+        <br>
+
+        <p>
+          <label><input type="checkbox" id="postNewSession">Use a new session</label>
+        </p>
+      </div>
+      <div class="row">
+        <div class="footer-actions">
+          <button id="btnPostBody">Submit data</button>
+        </div>
+      </div>
+      <p class="info"> <span class="info-icon" title="The total volume includes HTTP headers" aria-label="Information">i</span> The actual received volume also includes HTTP headers.
+      </p>
+    </section>
+
+    <section class="request-data-section">
+      <p class="chapter">3 · Outgoing data volume · Main demo</p>
+      <h2>A partner downloads an export</h2>
+      <p class="scenario">Few requests, but lots of data: simulate a large export for a partner.</p>
+      <p class="technical">Single GET · <code>outBytesPerMin</code> / <code>outBytesPerMinPerSession</code>.</p>
+      <div class="row">
+          <label>Receive <input style="text-align: center;"  class="inputData" type="number" id="respSize" value="1000" min="1"> bytes of data</label>
+           <p>
+            <label><input type="checkbox" id="getNewSession">Use a new session</label>
+          </p>
+      </div>
+      <div class="row">
+        <div class="footer-actions">
+          <button id="btnGetData">Download simulated export</button>
+        </div>
+      </div>
+      <p class="info">The limit applies to the uncompressed response. Exceeding it during transmission may interrupt the response and appear as a network error.</p>
+    </section>
+  </div>
+
+  <section class="sessions-section" id="sessions">
+    <div>
+      <p class="chapter">4 · The traffic spike</p>
+      <h2>Visitors arrive as ticket sales open</h2>
+      <p class="scenario">Visitors arrive without an account, then customers sign in. Limit the number of concurrent sessions, including guest sessions.</p>
+      <p class="technical"><code>nbSessions</code>: all sessions · <code>nbGuestSessions</code>: guest sessions only.</p>
+    </div>
+    <div class="row">
+      <label>Guest visitors to simulate <input style="text-align: center;" class="inputData"  type="number" id="sessionCount" value="1" min="1"></label>
+      <button id="btnOpenSessions">Admit visitors</button>
+    </div>
+    <div class="row">
+      <label>Signed-in customers to simulate <input style="text-align: center;" class="inputData"  type="number" id="authenticatedSessionCount" value="1" min="1"></label>
+      <button id="btnOpenAndAuthenticateSessions">Open their sessions</button>
+    </div>
+    <p class="info">Once the limit is reached, new sessions can be admitted only when capacity is freed. This is not a per-minute window.</p>
+  </section>
+
+  <section class="entity-sets-section" id="entity-sets">
+    <div>
+      <p class="chapter">5 · Going further</p>
+      <h2>An integration keeps REST entity sets</h2>
+      <p class="scenario">A partner's integration accumulates data selections on the server. Limit these resources kept in memory per session.</p>
+      <p class="technical"><code>nbEntitySetsPerSession</code> · REST entity sets.</p>
+    </div>
+    <div class="row">
+      <label>Create <input style="text-align: center;" class="inputData" type="text" id="entitySetCount" value="1"> entity sets in a new session</label>
+      <button id="btnCreateEntitySets">Create entity sets</button>
+    </div>
+  </section>
+  </div>
+
+  <section class="results-section">
+    <p class="chapter">Live · Technical log</p>
+    <h2>The server enforces the limits</h2>
+    <p class="scenario">First observe an accepted request, then a rejection or interruption when the configured budget is exceeded.</p>
+    <div id="stats" class="stats">
+      <label>Requests sent:</label><span id="statTotal" class="count">0</span>
+      <label>Accepted (2xx):</label><span id="statOk" class="countOK">0</span>
+      <label>Rejected (429):</label><span id="stat429" class="countKO">0</span>
+    </div>
+    <div class="row footer-actions">
+      <button id="btnClearLog" class="secondary">Clear log and counters</button>
+    </div>
+    <br>
+    <div class="demo-note">
+      <p><strong>429 + Retry-After:</strong> for a per-minute or per-hour limit, wait until the fixed window ends. For sessions and REST entity sets, the header is empty: capacity must be freed.</p>
+      <p>Clearing the log does not reset the server quotas. REST entity set creations are logged separately and are not included in the request counters above.</p>
+    </div>
+    <br>
+    
+    <div id="log" role="log" aria-label="Request results"></div>
+    <p class="technical"><a href="https://developer.4d.com/docs/API/WebServerClass#quotas" target="_blank" rel="noopener noreferrer">4D Web Server quotas documentation</a></p>
+  </section>
+
+</main>
+
+<script src="./testQuotasTicketing.js"></script>
+</body>
+</html>

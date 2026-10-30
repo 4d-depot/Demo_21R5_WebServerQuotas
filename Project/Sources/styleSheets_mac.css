@@ -1,0 +1,36 @@
+.Buttons_13 {
+	font-family: Lucida Grande;
+	font-size: 13px;
+}
+
+.default {
+	font-family: Lucida Grande;
+	font-size: 13px;
+}
+
+.default1 {
+	font-family: Lucida Grande;
+	font-size: 13px;
+}
+
+.HDI {
+	font-family: Lucida Grande;
+	font-size: 16px;
+	font-weight: bold;
+}
+
+.description {
+    font-size: 16px;
+}
+
+.TabPageBackground {
+	fill: #EAF5FC;
+	stroke: #CFE3F0;
+}
+
+@media (prefers-color-scheme: dark) {
+	.TabPageBackground {
+		fill: #1E2D3D;
+		stroke: #334155;
+	}
+}

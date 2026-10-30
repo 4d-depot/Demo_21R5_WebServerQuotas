@@ -1,0 +1,36 @@
+.Buttons_13 {
+	font-family: Segoe UI;
+	font-size: 12px;
+}
+
+.default {
+	font-family: Segoe UI;
+	font-size: 12px;
+}
+
+.default1 {
+	font-family: Segoe UI;
+	font-size: 12px;
+}
+
+.HDI {
+	font-family: Segoe UI;
+	font-size: 16px;
+	font-weight: bold;
+}
+
+.description {
+    font-size: 14px;
+}
+
+.TabPageBackground {
+	fill: #EAF5FC;
+	stroke: #CFE3F0;
+}
+
+@media (prefers-color-scheme: dark) {
+	.TabPageBackground {
+		fill: #1E2D3D;
+		stroke: #334155;
+	}
+}

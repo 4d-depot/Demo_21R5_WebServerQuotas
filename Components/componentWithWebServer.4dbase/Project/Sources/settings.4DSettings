@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?><preferences stamp="5">
+	<com.4d>
+		<web>
+			<standalone_server>
+				<configuration allow_ssl="false" port_number="8044" publish_at_startup="true"/>
+			</standalone_server>
+		</web>
+		<general component_classStore_name="componentWebServer"/>
+	</com.4d>
+</preferences>

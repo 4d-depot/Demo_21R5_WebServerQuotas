@@ -1,0 +1,8 @@
+[
+  {
+    "class": "WebHandler",
+    "method": "handle",
+    "regexPattern": "/getHostWebServerInfo",
+    "verbs": "get"
+  }
+]

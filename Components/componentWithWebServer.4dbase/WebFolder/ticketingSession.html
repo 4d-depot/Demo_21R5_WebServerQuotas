@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Ticket availability — 4D quotas demo</title>
+  <style>
+    body{margin:0;background:#fafaf8;color:#2b2b28;font:16px/1.5 -apple-system,Segoe UI,Helvetica,Arial,sans-serif}
+    main{max-width:760px;margin:12vh auto;padding:0 24px}
+    section{padding:28px;background:#fff;border:1px solid #e2e0da;border-radius:8px}
+    h1{margin:0 0 12px;font-size:30px;line-height:1.2}
+    .scenario{margin:0 0 24px;color:#57554e}
+    .controls{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+    button{border:1px solid #1764ac;background:#1764ac;color:#fff;padding:9px 16px;border-radius:5px;font-size:14px;cursor:pointer}
+    button.secondary{background:#fff;color:#1764ac}
+    button:disabled{opacity:.5;cursor:not-allowed}
+    #status{font-weight:600}
+    #log{margin-top:20px;padding:12px;background:#1e1e1c;color:#d9d7cf;border-radius:6px;font:12px/1.6 ui-monospace,Menlo,Consolas,monospace;max-height:300px;overflow:auto;white-space:pre-wrap}
+    .limited{color:#e08a6d}
+    .accepted{color:#8fbf9f}
+    .error{color:#ff7777}
+  </style>
+</head>
+<body>
+  <main>
+    <section>
+      <h1>A script keeps refreshing availability</h1>
+      <p class="scenario">A visitor automates seat lookups. Exceed the configured request budget and watch for 429 responses.</p>
+      <div class="controls">
+        <button id="startButton" type="button">Start refresh loop</button>
+        <button id="stopButton" class="secondary" type="button" disabled>Stop</button>
+        <span id="status" role="status" aria-live="polite">Ready to start</span>
+      </div>
+      <div id="log" role="log" aria-label="Request results" aria-live="polite"></div>
+    </section>
+  </main>
+  <script src="./ticketingSession.js"></script>
+</body>
+</html>
