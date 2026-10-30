@@ -42,8 +42,8 @@ async function loadSessionCounts() {
     if (!response.ok) throw new Error(`HTTP ${response.status}`);
 
     const quotas = await response.json();
-    nbSessionsEl.textContent = quotas.nbSessions ?? 0;
-    nbGuestSessionsEl.textContent = quotas.nbGuestSessions ?? 0;
+    if (nbSessionsEl) nbSessionsEl.textContent = quotas.nbSessions ?? 0;
+    if (nbGuestSessionsEl) nbGuestSessionsEl.textContent = quotas.nbGuestSessions ?? 0;
   } catch (error) {
     logLine(`Unable to load the number of sessions: ${error.message}`, 'lerr');
   }
@@ -148,7 +148,7 @@ btnBurstGetStart.addEventListener('click', () => {
   startBurst('burstGet', 'GET_WITH_SIZE', document.getElementById('burstGetProgress'), btnBurstGetStop);
 });
 btnBurstGetStop.addEventListener('click', () => stopBurst(btnBurstGetStop));
-document.getElementById('btnRefreshSessions').addEventListener('click', loadSessionCounts);
+document.getElementById('btnRefreshSessions')?.addEventListener('click', loadSessionCounts);
 document.getElementById('btnClearLog').addEventListener('click', () => {
   logEl.innerHTML = '';
   stats.total = 0;

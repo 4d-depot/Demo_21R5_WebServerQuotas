@@ -1,39 +1,552 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Ticket availability — 4D quotas demo</title>
-  <style>
-    body{margin:0;background:#fafaf8;color:#2b2b28;font:16px/1.5 -apple-system,Segoe UI,Helvetica,Arial,sans-serif}
-    main{max-width:760px;margin:12vh auto;padding:0 24px}
-    section{padding:28px;background:#fff;border:1px solid #e2e0da;border-radius:8px}
-    h1{margin:0 0 12px;font-size:30px;line-height:1.2}
-    .scenario{margin:0 0 24px;color:#57554e}
-    .controls{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
-    button{border:1px solid #1764ac;background:#1764ac;color:#fff;padding:9px 16px;border-radius:5px;font-size:14px;cursor:pointer}
-    button.secondary{background:#fff;color:#1764ac}
-    button:disabled{opacity:.5;cursor:not-allowed}
-    #status{font-weight:600}
-    #log{margin-top:20px;padding:12px;background:#1e1e1c;color:#d9d7cf;border-radius:6px;font:12px/1.6 ui-monospace,Menlo,Consolas,monospace;max-height:300px;overflow:auto;white-space:pre-wrap}
-    .limited{color:#e08a6d}
-    .accepted{color:#8fbf9f}
-    .error{color:#ff7777}
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ticketing — 4D Quotas Demo</title>
+<style>
+  :root{
+    --bg:#fafaf8;
+    --panel:#ffffff;
+    --border:#e2e0da;
+    --text:#2b2b28;
+    --muted:#767268;
+    --accent:#1764ac;
+    --accent-dark:#204d37;
+    --warn:#b3492f;
+    --ok:#2f6f4f;
+    --select:#44a273;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;
+    background:var(--bg);
+    color:var(--text);
+    line-height:1.4;
+  }
+  header{
+    padding:28px 32px 24px 16px;
+    max-width:1600px;
+    margin:0;
+  }
+  header h1{
+    margin:8px 0 12px;
+    font-size:32px;
+    line-height:1.15;
+    font-weight:650;
+    color:var(--text);
+  }
+  header p{
+    margin:0;
+    color:var(--muted);
+    font-size:14px;
+  }
+  main{
+    max-width:1600px;
+    width:100%;
+    margin:0;
+    padding:0 32px 64px 16px;
+    display:grid;
+    grid-template-columns:minmax(0, 1fr) minmax(420px, 1.25fr);
+    align-items:start;
+    gap:20px;
+  }
+  .main-content{
+    display:grid;
+    gap:20px;
+    min-width:0;
+  }
+  .results-section{
+    grid-column:2;
+    grid-row:1;
+    position:sticky;
+    top:20px;
+  }
+  .single-request-columns{
+    display:grid;
+    grid-template-columns:repeat(2, minmax(0, 1fr));
+    gap:20px;
+  }
+  .burst-columns{
+    display:grid;
+    grid-template-columns:repeat(2, minmax(0, 1fr));
+    gap:20px;
+  }
+  @media (max-width:1000px){
+    main{grid-template-columns:1fr;}
+    .results-section{
+      grid-column:1;
+      grid-row:auto;
+      position:static;
+    }
+  }
+  @media (max-width:700px){
+    header{padding:10px 16px 4px;}
+    header h1{width:100%; margin-left:0;}
+    main{padding:0 16px 40px;}
+    main{grid-template-columns:1fr;}
+    .results-section{
+      grid-column:1;
+      grid-row:auto;
+    }
+    .single-request-columns,
+    .burst-columns{grid-template-columns:1fr;}
+  }
+  section{
+    background:var(--panel);
+    border:1px solid var(--border);
+    border-radius:8px;
+    padding:18px 15px;
+    min-width:0;
+  }
+  section.send-data-highlight{
+    background:#f0faf4;
+    border:2px solid var(--select);
+  }
+  section.request-data-highlight{
+    background:#f0faf4;
+    border:2px solid var(--select);
+  }
+  section.sessions-highlight{
+    background:#f0faf4;
+    border:2px solid var(--select);
+  }
+  section.send-request-highlight{
+    background:#f0faf4;
+    border:2px solid var(--select);
+  }
+  section.dimmed{
+    opacity:.5;
+  }
+  section h2{
+    margin:0 0 4px;
+    font-size:18px;
+    font-weight:600;
+  }
+  .request-data-section h3{
+    color:var(--accent);
+    font-size:16px;
+    font-weight:500;
+  }
+ section p.info{
+    font-size:14px;
+    font-weight:400;
+    color:var(--muted);
+    margin: 10px 0 0 0px;
+  }
+
+  .info-icon{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    width:16px;
+    height:16px;
+    margin-right:5px;
+    border:1px solid #44a273;
+    border-radius:50%;
+    color:#44a273;
+    font-size:11px;
+    font-weight:700;
+    line-height:1;
+    vertical-align:middle;
+    cursor:help;
+  }
+
+  .sessions-section{
+    display:flex;
+    flex-direction:column;
+    align-items:stretch;
+    gap:16px;
+    min-width:0;
+  }
+  .sessions-section h2{
+    margin:0;
+  }
+  .sessions-section .row{
+    flex-wrap:wrap;
+    margin:0;
+    gap:8px;
+  }
+
+ section p.hint{
+   font-weight:600;
+    color:var(--ok);
+    font-size:16px;
+    display:flex;
+    justify-content:center;
+    width:100%;
+    margin: 10px;
+  }
+  .row{
+    display:flex;
+    flex-wrap:wrap;
+    align-items:center;
+    gap:10px;
+    margin-bottom:10px;
+  }
+  
+  .row:last-child{margin-bottom:0;}
+  label{
+    font-size:15px;
+    color:var(--muted);
+    display:flex;
+    align-items:center;
+    gap:6px;
+  }
+  
+  .inputData{
+    font-size:15px;
+    color:var(--text);
+    font-weight:600;
+  }
+  
+  .count{
+    font-size:15px;
+    color:var(--text);
+    font-weight:600;
+    display:flex;
+    margin-left:-6px;
+  }
+  
+   .countKO{
+    font-size:15px;
+    color:var(--warn);
+    font-weight:600;
+    display:flex;
+    margin-left:-6px;
+  }
+  
+   .countOK{
+    font-size:15px;
+    color:var(--ok);
+    font-weight:600;
+    display:flex;
+    margin-left:-6px;
+  }
+  
+  input[type=number],
+  input[type=text]{
+    width:90px;
+    padding:5px 7px;
+    border:1px solid var(--border);
+    border-radius:5px;
+    font-size:13px;
+  }
+  select{
+    padding:5px 7px;
+    border:1px solid var(--border);
+    border-radius:5px;
+    font-size:13px;
+    background:#fff;
+  }
+  input[type=checkbox]{margin: 0}
+  button{
+    border:1px solid var(--accent);
+    background:var(--accent);
+    color:#fff;
+    padding:7px 14px;
+    margin:0;
+    border-radius:5px;
+    font-size:13px;
+    cursor:pointer;
+  }
+  button.secondary{
+    background:#fff;
+    color:var(--accent);
+    border-color:var(--accent);
+  }
+  button.secondary:hover{background:#f2f1ed;}
+  button:disabled{
+    opacity:.5;
+    cursor:not-allowed;
+  }
+  .stats{
+    display:flex;
+    gap:24px;
+    flex-wrap:wrap;
+    font-size:13px;
+  }
+  .stats div span{
+    display:block;
+    font-size:20px;
+    font-weight:600;
+  }
+  .current-values{
+    display:flex;
+    flex-wrap:wrap;
+    align-items:center;
+    gap:16px;
+  }
+  .current-values-header{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    flex:1 0 100%;
+    gap:16px;
+  }
+  .send-request-section{
+    display:flex;
+    flex-direction:column;
+    align-items:stretch;
+    gap:16px;
+    min-width:0;
+  }
+  .send-request-section h2{
+    margin:0;
+  }
+  .send-request-section .row{
+    justify-content:space-between;
+    margin:0;
+  }
+  .current-values h2{
+    flex:0 0 auto;
+    margin:0;
+  }
+  .current-values .stats{
+    flex:1 1 auto;
+    flex-wrap:wrap;
+    min-width:0;
+    margin-bottom:0;
+    overflow:visible;
+    white-space:normal;
+  }
+  .current-values .stats label,
+  .current-values .stats span{
+    flex:0 0 auto;
+  }
+
+  #log{
+    background:#1e1e1c;
+    color:#d9d7cf;
+    border-radius:6px;
+    padding:10px 12px;
+    font-family:ui-monospace,Menlo,Consolas,monospace;
+    font-size:12px;
+    height:500px;
+    overflow-y:auto;
+    white-space:pre-wrap;
+  }
+  #log .l429{color:#e08a6d;}
+  #log .lok{color:#8fbf9f;}
+  #log .lerr{color:#ff0000;font-weight:bold;}
+  .footer-actions{
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    flex-wrap:wrap;
+    gap:10px;
+    margin-top:16px;
+    width:100%;
+  }
+  
+  #quotas{
+    background:var(--panel);
+    border-bottom:1px solid var(--border);
+    padding:10px 32px;
+  }
+  #quotas .quotas-title{
+    font-size:24px;
+    font-weight:600;
+    color:var(--accent);
+    margin-bottom:8px;
+  }
+  #quotas .quotas-row{
+    display:flex;
+    flex-wrap:wrap;
+    gap:0;
+  }
+  #quotas .quota{
+    flex:1 1 auto;
+    min-width:110px;
+    padding:4px 16px;
+    border-right:1px solid var(--border);
+    text-align:center;
+  }
+  #quotas .quota:last-child{border-right:none;}
+  #quotas .quota .label{
+    display:block;
+    font-size:11px;
+    color:var(--muted);
+    text-transform:uppercase;
+    letter-spacing:.02em;
+    margin-bottom:2px;
+  }
+  #quotas .quota .value{
+    display:block;
+    font-size:16px;
+    font-weight:600;
+    color:var(--text);
+  }
+  @media (max-width:560px){
+    .single-request-columns,
+    .burst-columns{grid-template-columns:1fr;}
+    section{padding:15px 12px;}
+    .sessions-section,
+    .current-values{align-items:flex-start;}
+    .sessions-section .row{flex-wrap:wrap; white-space:normal;}
+    .current-values{display:block;}
+    .current-values-header,
+    .current-values .stats{width:100%;}
+    #log{height:360px; font-size:11px;}
+  }
+  html{scroll-behavior:smooth;}
+  section[id]{scroll-margin-top:20px;}
+  .eyebrow,
+  .chapter{
+    color:var(--accent);
+    font-size:18px;
+    font-weight:700;
+    letter-spacing:.06em;
+    text-transform:uppercase;
+  }
+  .intro{max-width:820px;}
+  header .intro{font-size:16px; color:var(--text);}
+  .scenario-nav{
+    display:flex;
+    flex-wrap:wrap;
+    gap:8px;
+    margin-top:20px;
+  }
+  .scenario-nav a{
+    color:var(--accent);
+    background:var(--panel);
+    border:1px solid var(--border);
+    border-radius:20px;
+    padding:7px 12px;
+    font-size:13px;
+    text-decoration:none;
+  }
+  .scenario-nav a:hover{border-color:var(--accent);}
+  a:focus-visible, button:focus-visible, input:focus-visible{
+    outline:3px solid var(--accent);
+    outline-offset:3px;
+  }
+  .scenario{
+    border-left:3px solid var(--select);
+    padding-left:12px;
+    margin:12px 0 16px;
+    font-size:14px;
+    color:var(--text);
+  }
+  .technical{
+    color:var(--muted);
+    font-size:12px;
+    margin:10px 0;
+    overflow-wrap:anywhere;
+  }
+  code{font-family:ui-monospace,Menlo,Consolas,monospace;}
+  .demo-note{
+    padding:14px 16px;
+    background:#edf4fb;
+    border-radius:6px;
+    font-size:13px;
+  }
+  .demo-note p{margin:0 0 8px;}
+  .demo-note p:last-child{margin:0;}
+  .demo-note a{color:var(--accent);}
+  .results-section h2{margin-bottom:12px;}
+  .results-section .scenario{margin-bottom:16px;}
+  .results-section .stats{gap:10px 18px;}
+  .results-section #log{height:clamp(360px, 60vh, 760px);}
+  .sessions-section .row{flex-wrap:wrap; white-space:normal;}
+  .chapter{margin:0 0 6px;}
+  @media (prefers-reduced-motion:reduce){
+    html{scroll-behavior:auto;}
+  }
+</style>
 </head>
 <body>
-  <main>
-    <section>
-      <h1>A script keeps refreshing availability</h1>
-      <p class="scenario">A visitor automates seat lookups. Exceed the configured request budget and watch for 429 responses.</p>
-      <div class="controls">
-        <button id="startButton" type="button">Start refresh loop</button>
-        <button id="stopButton" class="secondary" type="button" disabled>Stop</button>
-        <span id="status" role="status" aria-live="polite">Ready to start</span>
+
+
+<header>
+  <h1>Welcome Mary!</h1>
+</header>
+
+<main>
+  <div class="main-content">
+  <section class="send-request-section" id="visitor">
+    <div>
+    <p class="chapter">1 · Check seats availability</p>
+    </div>
+    <div class="row">
+      <label>One submission every <input style="text-align:center;" class="inputData" type="number" id="visitorBurstDelay" value="1" min="1" step="1"> seconds</label>
+      <label>Number of submissions <input style="text-align:center;" class="inputData" type="number" id="visitorBurstCount" value="60" min="1" step="1"></label>
+    </div>
+    <div class="row">
+      <div class="footer-actions">
+        <button id="btnVisitorBurstStart" type="button">Start burst</button>
+        <button id="btnVisitorBurstStop" class="secondary" type="button" disabled>Stop</button>
       </div>
-      <div id="log" role="log" aria-label="Request results" aria-live="polite"></div>
+      <p class="hint" id="visitorBurstProgress" role="status"></p>
+    </div>
+  </section>
+
+  <div class="burst-columns" id="refresh">
+    <section class="send-data-section">
+      <div>
+         <p class="chapter">2 · An event organizer's software sends too much data</p>
+      </div>
+      <br>
+      <div class="row">
+        <label>One submission every <input style="text-align:center;" class="inputData" type="number" id="burstPostDelay" value="1" min="1"> seconds</label>
+        <label>Number of submissions <input style="text-align:center;" class="inputData" type="number" id="burstPostCount" value="60" min="1"></label>
+        <label>Payload size <input style="text-align:center;" class="inputData" type="number" id="burstPostSize" value="1000" min="1"> bytes</label>
+      </div>
+     
+      <div class="row">
+        <div class="footer-actions">
+          <button id="btnBurstPostStart">Start submissions</button>
+          <button id="btnBurstPostStop" class="secondary" disabled>Stop</button>
+        </div>
+        <p class="hint" id="burstPostProgress" role="status"></p>
+      </div>
+      <p class="info">The incoming quota counts the request body and HTTP headers, not just the size entered here.</p>
     </section>
-  </main>
-  <script src="./ticketingSession.js"></script>
+
+    <section class="request-data-section">
+     <div>
+           <p class="chapter">3 · A visitor automates seat lookups.</p>
+        </div>
+
+      <h3>A script keeps refreshing availability</h3>
+ 
+      <div class="row">
+        <label>One lookup every <input style="text-align:center;" class="inputData" type="number" id="burstGetDelay" value="1" min="1"> seconds</label>
+        <label>Number of lookups <input style="text-align:center;" class="inputData" type="number" id="burstGetCount" value="60" min="1"></label>
+        <label>Response size <input style="text-align:center;" class="inputData" type="number" id="burstGetSize" value="1000" min="1"> bytes</label>
+      </div>
+
+      <div class="row">
+        <div class="footer-actions">
+          <button id="btnBurstGetStart">Simulate refresh loop</button>
+          <button id="btnBurstGetStop" class="secondary" disabled>Stop</button>
+        </div>
+        <p class="hint" id="burstGetProgress" role="status"></p>
+      </div>
+  
+    </section>
+  </div>
+
+  </div>
+
+  <section class="results-section">
+     <h2>Live · Technical log</h2>
+    <p class="scenario">First observe an accepted request, then a rejection or interruption when the configured budget is exceeded.</p>
+    <div id="stats" class="stats">
+      <label>Requests sent:</label><span id="statTotal" class="count">0</span>
+      <label>Accepted (2xx):</label><span id="statOk" class="countOK">0</span>
+      <label>Rejected (429):</label><span id="stat429" class="countKO">0</span>
+    </div>
+    <div class="row footer-actions">
+      <button id="btnClearLog" class="secondary">Clear log and counters</button>
+    </div>
+    <br>
+    <div id="log" role="log" aria-label="Request results"></div>
+  </section>
+
+</main>
+
+<script src="./testQuotasTicketing.js"></script>
 </body>
 </html>

@@ -78,7 +78,7 @@ Function formEventHandler($formEventCode : Integer)
 			
 			OBJECT SET VISIBLE:C603(*; "Restarting"; False:C215)
 			
-			This:C1470.resetQuotas()
+			//This.resetQuotas()
 			Form:C1466.quotas:=This:C1470.getQuotas()
 			
 			
