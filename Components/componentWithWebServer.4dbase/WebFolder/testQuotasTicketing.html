@@ -10,6 +10,7 @@
     --panel:#ffffff;
     --border:#e2e0da;
     --text:#2b2b28;
+    --title: #6dc58a;
     --muted:#767268;
     --accent:#1764ac;
     --accent-dark:#204d37;
@@ -35,7 +36,8 @@
     font-size:32px;
     line-height:1.15;
     font-weight:650;
-    color:var(--text);
+    color:var(--title);
+    text-align:center;
   }
   header p{
     margin:0;
@@ -460,7 +462,7 @@
 
 
 <header>
-  <h1>10 AM: ticket sales open. Keep the server available.</h1>
+  <h1>Ticket sales application</h1>
 </header>
 
 <main>
@@ -502,7 +504,7 @@
       <div class="row">
         <label>One submission every <input style="text-align:center;" class="inputData" type="number" id="burstPostDelay" value="1" min="1"> seconds</label>
         <label>Number of submissions <input style="text-align:center;" class="inputData" type="number" id="burstPostCount" value="60" min="1"></label>
-        <label>Payload size <input style="text-align:center;" class="inputData" type="number" id="burstPostSize" value="1000" min="1"> bytes</label>
+        <label>Payload size <input style="text-align:center;" class="inputData" type="number" id="burstPostSize" value="3000" min="1"> bytes</label>
       </div>
      
       <div class="row">
@@ -525,7 +527,7 @@
       <div class="row">
         <label>One lookup every <input style="text-align:center;" class="inputData" type="number" id="burstGetDelay" value="1" min="1"> seconds</label>
         <label>Number of lookups <input style="text-align:center;" class="inputData" type="number" id="burstGetCount" value="60" min="1"></label>
-        <label>Response size <input style="text-align:center;" class="inputData" type="number" id="burstGetSize" value="1000" min="1"> bytes</label>
+        <label>Response size <input style="text-align:center;" class="inputData" type="number" id="burstGetSize" value="5000" min="1"> bytes</label>
       </div>
 
       <div class="row">
@@ -543,7 +545,6 @@
 
   <section class="results-section">
      <h2>Live · Technical log</h2>
-    <p class="scenario">First observe an accepted request, then a rejection or interruption when the configured budget is exceeded.</p>
     <div id="stats" class="stats">
       <label>Requests sent:</label><span id="statTotal" class="count">0</span>
       <label>Accepted (2xx):</label><span id="statOk" class="countOK">0</span>

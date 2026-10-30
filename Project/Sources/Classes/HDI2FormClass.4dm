@@ -52,7 +52,7 @@ Function formEventHandler($formEventCode : Integer)
 				DELAY PROCESS:C323(Current process:C322; 60)
 			End if 
 			
-			Form:C1466.proposedQuotas:={inBytesPerMin: 4000; outBytesPerMin: 3000; nbRequestsPerMin: 5; inBytesPerMinPerSession: 2000; outBytesPerMinPerSession: 3000; nbRequestsPerMinPerSession: 5}
+			Form:C1466.proposedQuotas:={inBytesPerMin: 10000; outBytesPerMin: 20000; nbRequestsPerMin: 10; inBytesPerMinPerSession: 2000; outBytesPerMinPerSession: 3000; nbRequestsPerMinPerSession: 5}
 			
 			Form:C1466.proposedQuotas.nbRequestsPerMinPerSession:=4
 			
@@ -68,7 +68,7 @@ Function formEventHandler($formEventCode : Integer)
 			
 		: ($formEventCode=On Page Change:K2:54)
 			
-			Form:C1466.proposedQuotas:={inBytesPerMin: 4000; outBytesPerMin: 3000; nbRequestsPerMin: 5; inBytesPerMinPerSession: 2000; outBytesPerMinPerSession: 3000; nbRequestsPerMinPerSession: 5}
+			Form:C1466.proposedQuotas:={inBytesPerMin: 10000; outBytesPerMin: 20000; nbRequestsPerMin: 10; inBytesPerMinPerSession: 2000; outBytesPerMinPerSession: 3000; nbRequestsPerMinPerSession: 5}
 			
 			Form:C1466.proposedQuotas.nbRequestsPerMinPerSession:=4
 			
