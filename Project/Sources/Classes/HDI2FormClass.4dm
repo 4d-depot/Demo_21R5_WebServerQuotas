@@ -52,7 +52,7 @@ Function formEventHandler($formEventCode : Integer)
 				DELAY PROCESS:C323(Current process:C322; 60)
 			End if 
 			
-			Form:C1466.proposedQuotas:={inBytesPerMin: 10000; outBytesPerMin: 20000; nbRequestsPerMin: 10; inBytesPerMinPerSession: 2000; outBytesPerMinPerSession: 3000; nbRequestsPerMinPerSession: 5}
+			Form:C1466.proposedQuotas:={inBytesPerMin: 10000; outBytesPerMin: 20000; nbRequestsPerMin: 10; inBytesPerMinPerSession: 2000; outBytesPerMinPerSession: 5000; nbRequestsPerMinPerSession: 5}
 			
 			Form:C1466.proposedQuotas.nbRequestsPerMinPerSession:=4
 			
@@ -68,7 +68,7 @@ Function formEventHandler($formEventCode : Integer)
 			
 		: ($formEventCode=On Page Change:K2:54)
 			
-			Form:C1466.proposedQuotas:={inBytesPerMin: 10000; outBytesPerMin: 20000; nbRequestsPerMin: 10; inBytesPerMinPerSession: 2000; outBytesPerMinPerSession: 3000; nbRequestsPerMinPerSession: 5}
+			Form:C1466.proposedQuotas:={inBytesPerMin: 10000; outBytesPerMin: 20000; nbRequestsPerMin: 10; inBytesPerMinPerSession: 2000; outBytesPerMinPerSession: 5000; nbRequestsPerMinPerSession: 5}
 			
 			Form:C1466.proposedQuotas.nbRequestsPerMinPerSession:=4
 			
@@ -177,7 +177,7 @@ Function resetThisQuota($quotaName : Text)
 	End if 
 	
 	$webServerQuotas[$quotaName]:=Null:C1517
-	Form:C1466.proposedQuotas[$quotaName]:=0
+	//Form.proposedQuotas[$quotaName]:=0
 	Form:C1466.quotas:=This:C1470.getQuotas()
 	
 	

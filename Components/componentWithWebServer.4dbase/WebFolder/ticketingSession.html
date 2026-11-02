@@ -6,7 +6,7 @@
 <title>Ticketing — 4D Quotas Demo</title>
 <style>
   :root{
-    --bg:#fafaf8;
+    --bg:#eef4f1;
     --panel:#ffffff;
     --border:#e2e0da;
     --text:#2b2b28;
@@ -21,21 +21,52 @@
   body{
     margin:0;
     font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;
-    background:var(--bg);
+    background:
+      radial-gradient(1200px 500px at 15% -10%, #dcefe3 0%, transparent 60%),
+      radial-gradient(900px 450px at 100% 0%, #dde9f6 0%, transparent 55%),
+      var(--bg);
+    background-attachment:fixed;
     color:var(--text);
+    min-height:100vh;
     line-height:1.4;
   }
   header{
     padding:28px 32px 24px 16px;
-    max-width:1600px;
+    max-width:1800px;
     margin:0;
   }
   header h1{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:16px;
     margin:8px 0 12px;
-    font-size:32px;
+    font-size:34px;
     line-height:1.15;
-    font-weight:650;
-    color:var(--text);
+    font-weight:750;
+    letter-spacing:-.01em;
+  }
+  header h1 .title-avatar{
+    width:64px;
+    height:64px;
+    border-radius:50%;
+    object-fit:cover;
+    border:3px solid #fff;
+    outline:2px solid var(--select);
+    box-shadow:0 6px 16px rgba(23,100,172,.25);
+    flex:0 0 auto;
+  }
+  header h1 .title-text{
+    background:linear-gradient(90deg, var(--ok), var(--select) 45%, var(--accent));
+    -webkit-background-clip:text;
+    background-clip:text;
+    color:transparent;
+    padding-bottom:4px;
+    border-bottom:3px dashed rgba(68,162,115,.45);
+  }
+  @media (max-width:700px){
+    header h1{font-size:26px; gap:12px;}
+    header h1 .title-avatar{width:48px; height:48px;}
   }
   header p{
     margin:0;
@@ -43,12 +74,12 @@
     font-size:14px;
   }
   main{
-    max-width:1600px;
+    max-width:1800px;
     width:100%;
     margin:0;
     padding:0 32px 64px 16px;
     display:grid;
-    grid-template-columns:minmax(0, 1fr) minmax(420px, 1.25fr);
+    grid-template-columns:minmax(0, 1fr) minmax(460px, 1.2fr);
     align-items:start;
     gap:20px;
   }
@@ -70,7 +101,7 @@
   }
   .burst-columns{
     display:grid;
-    grid-template-columns:repeat(2, minmax(0, 1fr));
+    grid-template-columns:minmax(0, 1fr);
     gap:20px;
   }
   @media (max-width:1000px){
@@ -187,6 +218,8 @@
   }
   
   .row:last-child{margin-bottom:0;}
+  .send-data-section .row,
+  .request-data-section .row{row-gap:18px;}
   label{
     font-size:15px;
     color:var(--muted);
@@ -460,7 +493,10 @@
 
 
 <header>
-  <h1>Welcome Mary!</h1>
+  <h1>
+    <img class="title-avatar" src="./images/mary-avatar.svg" alt="" aria-hidden="true">
+    <span class="title-text">Welcome Mary!</span>
+  </h1>
 </header>
 
 <main>
@@ -483,30 +519,9 @@
   </section>
 
   <div class="burst-columns" id="refresh">
-    <section class="send-data-section">
-      <div>
-         <p class="chapter">2 · An event organizer's software sends too much data</p>
-      </div>
-      <br>
-      <div class="row">
-        <label>One submission every <input style="text-align:center;" class="inputData" type="number" id="burstPostDelay" value="1" min="1"> seconds</label>
-        <label>Number of submissions <input style="text-align:center;" class="inputData" type="number" id="burstPostCount" value="60" min="1"></label>
-        <label>Payload size <input style="text-align:center;" class="inputData" type="number" id="burstPostSize" value="1000" min="1"> bytes</label>
-      </div>
-     
-      <div class="row">
-        <div class="footer-actions">
-          <button id="btnBurstPostStart">Start submissions</button>
-          <button id="btnBurstPostStop" class="secondary" disabled>Stop</button>
-        </div>
-        <p class="hint" id="burstPostProgress" role="status"></p>
-      </div>
-      <p class="info">The incoming quota counts the request body and HTTP headers, not just the size entered here.</p>
-    </section>
-
     <section class="request-data-section">
      <div>
-           <p class="chapter">3 · A visitor automates seat lookups.</p>
+           <p class="chapter">3 · Automate seat lookups</p>
         </div>
 
       <h3>A script keeps refreshing availability</h3>
@@ -514,7 +529,7 @@
       <div class="row">
         <label>One lookup every <input style="text-align:center;" class="inputData" type="number" id="burstGetDelay" value="1" min="1"> seconds</label>
         <label>Number of lookups <input style="text-align:center;" class="inputData" type="number" id="burstGetCount" value="60" min="1"></label>
-        <label>Response size <input style="text-align:center;" class="inputData" type="number" id="burstGetSize" value="2000" min="1"> bytes</label>
+        <label>Response size <input style="text-align:center;" class="inputData" type="number" id="burstGetSize" value="5000" min="1"> bytes</label>
       </div>
 
       <div class="row">
@@ -531,8 +546,7 @@
   </div>
 
   <section class="results-section">
-     <h2>Live · Technical log</h2>
-    <p class="scenario">First observe an accepted request, then a rejection or interruption when the configured budget is exceeded.</p>
+     <h2>Live technical log</h2>
     <div id="stats" class="stats">
       <label>Requests sent:</label><span id="statTotal" class="count">0</span>
       <label>Accepted (2xx):</label><span id="statOk" class="countOK">0</span>

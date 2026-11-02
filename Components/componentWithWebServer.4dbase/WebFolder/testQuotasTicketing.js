@@ -92,7 +92,7 @@ async function sendRequest({ method = 'GET', body = null, querySize = null } = {
 async function runBurst({ prefix, type, progressEl, stopButton, count, delay }) {
   burstRunning = true;
   btnVisitorBurstStart.disabled = true;
-  btnBurstPostStart.disabled = true;
+  if (btnBurstPostStart) btnBurstPostStart.disabled = true;
   btnBurstGetStart.disabled = true;
   stopButton.disabled = false;
 
@@ -117,10 +117,10 @@ async function runBurst({ prefix, type, progressEl, stopButton, count, delay }) 
   progressEl.textContent = burstRunning ? 'Burst completed' : 'Burst stopped';
   burstRunning = false;
   btnVisitorBurstStart.disabled = false;
-  btnBurstPostStart.disabled = false;
+  if (btnBurstPostStart) btnBurstPostStart.disabled = false;
   btnBurstGetStart.disabled = false;
   btnVisitorBurstStop.disabled = true;
-  btnBurstPostStop.disabled = true;
+  if (btnBurstPostStop) btnBurstPostStop.disabled = true;
   btnBurstGetStop.disabled = true;
   await loadSessionCounts();
 }
@@ -140,10 +140,10 @@ btnVisitorBurstStart.addEventListener('click', () => {
   startBurst('visitorBurst', 'GET', visitorBurstProgressEl, btnVisitorBurstStop);
 });
 btnVisitorBurstStop.addEventListener('click', () => stopBurst(btnVisitorBurstStop));
-btnBurstPostStart.addEventListener('click', () => {
+btnBurstPostStart?.addEventListener('click', () => {
   startBurst('burstPost', 'POST', document.getElementById('burstPostProgress'), btnBurstPostStop);
 });
-btnBurstPostStop.addEventListener('click', () => stopBurst(btnBurstPostStop));
+btnBurstPostStop?.addEventListener('click', () => stopBurst(btnBurstPostStop));
 btnBurstGetStart.addEventListener('click', () => {
   startBurst('burstGet', 'GET_WITH_SIZE', document.getElementById('burstGetProgress'), btnBurstGetStop);
 });

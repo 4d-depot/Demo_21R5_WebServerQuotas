@@ -54,19 +54,6 @@
 					"strokeWidth": 0,
 					"stroke": "transparent",
 					"fill": "#FFFFFF"
-				},
-				"Check Box": {
-					"type": "checkbox",
-					"text": "Trace",
-					"top": 740,
-					"left": 40,
-					"width": 70,
-					"height": 20,
-					"events": [
-						"onClick"
-					],
-					"dataSource": "btnTrace",
-					"dataSourceTypeHint": "boolean"
 				}
 			}
 		},
@@ -525,13 +512,16 @@
 					"display": false,
 					"method": "ObjectMethods/BtnContinue31.4dm"
 				}
-			}
+			},
+			"entryOrder": [
+				"BtnContinue30"
+			]
 		},
 		{
 			"objects": {
 				"LabelInputText5": {
 					"type": "text",
-					"top": 220,
+					"top": 250,
 					"left": 0,
 					"width": 300,
 					"height": 20,
@@ -545,8 +535,8 @@
 				},
 				"InputText11": {
 					"type": "input",
-					"top": 210,
-					"left": 330,
+					"top": 240,
+					"left": 340,
 					"width": 70,
 					"height": 40,
 					"sizingX": "fixed",
@@ -567,8 +557,8 @@
 				},
 				"BtnContinueBackground3": {
 					"type": "rectangle",
-					"top": 262,
-					"left": 150,
+					"top": 300,
+					"left": 160,
 					"width": 120,
 					"height": 40,
 					"sizingX": "fixed",
@@ -579,8 +569,8 @@
 				},
 				"BtnContinue3": {
 					"type": "button",
-					"top": 262,
-					"left": 150,
+					"top": 300,
+					"left": 160,
 					"width": 120,
 					"height": 40,
 					"sizingX": "fixed",
@@ -599,8 +589,8 @@
 				},
 				"BtnContinueBackground16": {
 					"type": "rectangle",
-					"top": 262,
-					"left": 290,
+					"top": 300,
+					"left": 300,
 					"width": 120,
 					"height": 40,
 					"sizingX": "fixed",
@@ -611,8 +601,8 @@
 				},
 				"BtnContinue16": {
 					"type": "button",
-					"top": 262,
-					"left": 290,
+					"top": 300,
+					"left": 300,
 					"width": 120,
 					"height": 40,
 					"sizingX": "fixed",
@@ -632,8 +622,8 @@
 				"Text16": {
 					"type": "text",
 					"text": "Reset",
-					"top": 269,
-					"left": 290,
+					"top": 309,
+					"left": 300,
 					"width": 120,
 					"height": 0,
 					"stroke": "#289FE8",
@@ -646,8 +636,8 @@
 				"Text17": {
 					"type": "text",
 					"text": "Apply",
-					"top": 269,
-					"left": 150,
+					"top": 309,
+					"left": 160,
 					"width": 120,
 					"height": 0,
 					"stroke": "#FFFFFF",
@@ -656,139 +646,11 @@
 					"fontSize": 18,
 					"sizingX": "fixed",
 					"sizingY": "fixed"
-				},
-				"BtnContinueBackground4": {
-					"type": "rectangle",
-					"top": 425,
-					"left": 150,
-					"width": 120,
-					"height": 40,
-					"sizingX": "fixed",
-					"sizingY": "fixed",
-					"borderRadius": 6,
-					"stroke": "transparent",
-					"fill": "#3AA2FB"
-				},
-				"Text2": {
-					"type": "text",
-					"text": "Apply",
-					"top": 435,
-					"left": 150,
-					"width": 120,
-					"height": 0,
-					"stroke": "#FFFFFF",
-					"textAlign": "center",
-					"fontWeight": "bold",
-					"fontSize": 18,
-					"sizingX": "fixed",
-					"sizingY": "fixed"
-				},
-				"LabelInputText9": {
-					"type": "text",
-					"top": 380,
-					"left": 60,
-					"width": 240,
-					"height": 20,
-					"sizingX": "fixed",
-					"stroke": "#26334D",
-					"text": "inBytesPerMinPerSession",
-					"fontSize": 18,
-					"fontWeight": "bold",
-					"textAlign": "right",
-					"sizingY": "fixed"
-				},
-				"InputText10": {
-					"type": "input",
-					"top": 370,
-					"left": 330,
-					"width": 70,
-					"height": 40,
-					"sizingX": "fixed",
-					"dataSource": "Form:C1466.proposedQuotas.inBytesPerMinPerSession",
-					"dataSourceTypeHint": "integer",
-					"fill": "#FBFCFE",
-					"stroke": "#26334D",
-					"borderStyle": "solid",
-					"borderRadius": 8,
-					"fontSize": 14,
-					"dragging": "none",
-					"dropping": "none",
-					"enterable": true,
-					"focusable": false,
-					"textAlign": "center",
-					"verticalAlign": "middle",
-					"sizingY": "fixed"
-				},
-				"BtnContinue2": {
-					"type": "button",
-					"top": 425,
-					"left": 150,
-					"width": 120,
-					"height": 40,
-					"sizingX": "fixed",
-					"sizingY": "fixed",
-					"style": "regular",
-					"text": "GO",
-					"borderStyle": "none",
-					"fontSize": 14,
-					"fontWeight": "bold",
-					"textAlign": "center",
-					"events": [
-						"onClick"
-					],
-					"display": false,
-					"method": "ObjectMethods/BtnContinue2.4dm"
-				},
-				"BtnContinueBackground18": {
-					"type": "rectangle",
-					"top": 425,
-					"left": 290,
-					"width": 120,
-					"height": 40,
-					"sizingX": "fixed",
-					"sizingY": "fixed",
-					"borderRadius": 6,
-					"stroke": "#289FE8",
-					"fill": "#FFFFFF"
-				},
-				"Text18": {
-					"type": "text",
-					"text": "Reset",
-					"top": 435,
-					"left": 290,
-					"width": 120,
-					"height": 0,
-					"stroke": "#289FE8",
-					"textAlign": "center",
-					"fontWeight": "bold",
-					"fontSize": 18,
-					"sizingX": "fixed",
-					"sizingY": "fixed"
-				},
-				"BtnContinue17": {
-					"type": "button",
-					"top": 425,
-					"left": 290,
-					"width": 120,
-					"height": 40,
-					"sizingX": "fixed",
-					"sizingY": "fixed",
-					"style": "regular",
-					"text": "GO",
-					"borderStyle": "none",
-					"fontSize": 14,
-					"fontWeight": "bold",
-					"textAlign": "center",
-					"events": [
-						"onClick"
-					],
-					"display": false,
-					"method": "ObjectMethods/BtnContinue17.4dm"
 				},
 				"BtnContinueBackground17": {
 					"type": "rectangle",
-					"top": 574,
-					"left": 150,
+					"top": 480,
+					"left": 160,
 					"width": 120,
 					"height": 40,
 					"sizingX": "fixed",
@@ -800,8 +662,8 @@
 				"Text4": {
 					"type": "text",
 					"text": "Apply",
-					"top": 583,
-					"left": 150,
+					"top": 490,
+					"left": 160,
 					"width": 120,
 					"height": 0,
 					"stroke": "#FFFFFF",
@@ -813,7 +675,7 @@
 				},
 				"LabelInputText12": {
 					"type": "text",
-					"top": 530,
+					"top": 430,
 					"left": 60,
 					"width": 240,
 					"height": 20,
@@ -827,8 +689,8 @@
 				},
 				"InputText12": {
 					"type": "input",
-					"top": 520,
-					"left": 330,
+					"top": 420,
+					"left": 340,
 					"width": 70,
 					"height": 40,
 					"sizingX": "fixed",
@@ -849,8 +711,8 @@
 				},
 				"BtnContinue4": {
 					"type": "button",
-					"top": 574,
-					"left": 150,
+					"top": 480,
+					"left": 160,
 					"width": 120,
 					"height": 40,
 					"sizingX": "fixed",
@@ -869,8 +731,8 @@
 				},
 				"BtnContinueBackground32": {
 					"type": "rectangle",
-					"top": 574,
-					"left": 290,
+					"top": 480,
+					"left": 300,
 					"width": 120,
 					"height": 40,
 					"sizingX": "fixed",
@@ -882,8 +744,8 @@
 				"Text34": {
 					"type": "text",
 					"text": "Reset",
-					"top": 583,
-					"left": 290,
+					"top": 490,
+					"left": 300,
 					"width": 120,
 					"height": 0,
 					"stroke": "#289FE8",
@@ -895,8 +757,8 @@
 				},
 				"BtnContinue32": {
 					"type": "button",
-					"top": 574,
-					"left": 290,
+					"top": 480,
+					"left": 300,
 					"width": 120,
 					"height": 40,
 					"sizingX": "fixed",
@@ -982,7 +844,10 @@
 					"verticalAlign": "top",
 					"sizingY": "fixed"
 				}
-			}
+			},
+			"entryOrder": [
+				"BtnContinue32"
+			]
 		}
 	],
 	"$4d": {
@@ -996,7 +861,7 @@
 			"View 1": {}
 		}
 	},
-	"geometryStamp": 3674,
+	"geometryStamp": 3736,
 	"windowSizingX": "fixed",
 	"windowSizingY": "fixed",
 	"formClass": "HDI2FormClass"
