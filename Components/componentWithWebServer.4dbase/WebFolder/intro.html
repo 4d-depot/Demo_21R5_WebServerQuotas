@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Concert rush — 4D Quotas Demo intro</title>
+<style>
+  html, body{margin:0; height:100%; background:#0b0a18; overflow:hidden;}
+  canvas{display:block; width:100vw; height:100vh;}
+  .hint{
+    position:fixed; right:14px; bottom:10px;
+    font:12px -apple-system,Segoe UI,Helvetica,Arial,sans-serif;
+    color:rgba(255,255,255,.55);
+    opacity:0; transition:opacity .3s;
+    pointer-events:none;
+  }
+  body.show-hint .hint{opacity:1;}
+</style>
+</head>
+<body>
+<canvas id="scene"></canvas>
+<div class="hint">Space / R: replay · F: full screen</div>
+
+<script>
+(() => {
+  const SOLD_OUT_AT = 5;
+  const SPAWN_END = 4.4;
+  const MAX_PEOPLE = 260;
+  const ENTRY_INTERVAL = 0.11;
+
+  const canvas = document.getElementById('scene');
+  const ctx = canvas.getContext('2d');
+  const palette = ['#44a273', '#1764ac', '#6dc58a', '#e08a6d', '#c9a227', '#8a6dd8', '#d85f8a', '#3fb6c4'];
+
+  let W, H, groundY, doorX, doorW, doorH, scaleRef;
+  let people, stars, simTime, lastEntry, spawnAcc;
+
+  function resize() {
+    const dpr = window.devicePixelRatio || 1;
+    W = window.innerWidth;
+    H = window.innerHeight;
+    canvas.width = W * dpr;
+    canvas.height = H * dpr;
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    groundY = H * 0.62;
+    doorX = W / 2;
+    doorW = Math.max(60, W * 0.07);
+    doorH = H * 0.16;
+    scaleRef = H / 900;
+  }
+
+  function reset() {
+    people = [];
+    stars = Array.from({ length: 140 }, () => ({
+      x: Math.random(), y: Math.random() * 0.5, r: Math.random() * 1.3 + 0.3, p: Math.random() * 6
+    }));
+    simTime = 0;
+    lastEntry = 0;
+    spawnAcc = 0;
+  }
+
+  const depth = (y) => Math.min(1.4, 0.3 + 1.0 * (y - groundY) / (H - groundY));
+
+  function spawn() {
+    const side = Math.random();
+    let x, y;
+    if (side < 0.55) {
+      x = Math.random() * W;
+      y = H + 30;
+    } else {
+      x = side < 0.78 ? -30 : W + 30;
+      y = groundY + (0.25 + Math.random() * 0.75) * (H - groundY);
+    }
+    people.push({
+      x, y, vx: 0, vy: 0,
+      speed: (120 + Math.random() * 110) * scaleRef,
+      phase: Math.random() * Math.PI * 2,
+      color: palette[(Math.random() * palette.length) | 0],
+      height: (0.9 + Math.random() * 0.2),
+      offset: (Math.random() - 0.5) * doorW * 0.9,
+      flash: 0,
+      gone: false,
+      fade: 1
+    });
+  }
+
+  function update(t, dt) {
+    if (t < SPAWN_END && people.length < MAX_PEOPLE) {
+      const rate = 20 + 70 * (t / SPAWN_END);
+      spawnAcc += rate * dt;
+      while (spawnAcc >= 1) { spawn(); spawnAcc--; }
+    }
+
+    const soldOut = t >= SOLD_OUT_AT;
+    const targetY = groundY + 4;
+
+    for (const p of people) {
+      if (p.gone) { p.fade -= dt * 4; continue; }
+      const s = depth(p.y);
+      if (soldOut) {
+        // Doors are closed: the crowd stops where it is and just shuffles.
+        const jitter = 18 * scaleRef * s;
+        p.vx += ((Math.random() - 0.5) * jitter - p.vx) * Math.min(1, dt * 4);
+        p.vy += ((Math.random() - 0.5) * jitter * 0.4 - p.vy) * Math.min(1, dt * 4);
+        continue;
+      }
+      const tx = doorX + p.offset;
+      let dx = tx - p.x, dy = targetY - p.y;
+      const dist = Math.hypot(dx, dy) || 1;
+      const urgency = 1 + Math.min(1, t / 3);
+      const desiredVx = dx / dist * p.speed * urgency * Math.max(0.35, s);
+      const desiredVy = dy / dist * p.speed * urgency * Math.max(0.35, s);
+      p.vx += (desiredVx - p.vx) * Math.min(1, dt * 3);
+      p.vy += (desiredVy - p.vy) * Math.min(1, dt * 3);
+    }
+
+    // Separation keeps the crowd from overlapping, which makes it pile up at the door.
+    const alive = people.filter(p => !p.gone);
+    for (let i = 0; i < alive.length; i++) {
+      const a = alive[i];
+      const ra = 22 * scaleRef * depth(a.y);
+      for (let j = i + 1; j < alive.length; j++) {
+        const b = alive[j];
+        const dx = b.x - a.x, dy = (b.y - a.y) * 2.2;
+        const d = Math.hypot(dx, dy);
+        const min = ra + 22 * scaleRef * depth(b.y);
+        if (d > 0 && d < min) {
+          const push = (min - d) / min * 160 * scaleRef;
+          const nx = dx / d, ny = dy / d / 2.2;
+          a.vx -= nx * push * dt * 10; a.vy -= ny * push * dt * 10;
+          b.vx += nx * push * dt * 10; b.vy += ny * push * dt * 10;
+        }
+      }
+    }
+
+    for (const p of alive) {
+      p.x += p.vx * dt;
+      p.y += p.vy * dt;
+      if (p.y < groundY + 2) { p.y = groundY + 2; p.vy = Math.max(0, p.vy); }
+      const moving = Math.hypot(p.vx, p.vy);
+      p.phase += dt * (4 + moving / (25 * scaleRef));
+      if (p.flash > 0) p.flash -= dt;
+      else if (Math.random() < dt * 0.25) p.flash = 0.12;
+
+      const atDoor = Math.abs(p.x - doorX) < doorW * 0.45 && p.y < groundY + 14 * scaleRef;
+      if (atDoor && !soldOut && t - lastEntry > ENTRY_INTERVAL) {
+        p.gone = true;
+        lastEntry = t;
+      }
+    }
+    people = people.filter(p => !p.gone || p.fade > 0);
+  }
+
+  function drawSky(t) {
+    const g = ctx.createLinearGradient(0, 0, 0, groundY);
+    g.addColorStop(0, '#0b0a18');
+    g.addColorStop(1, '#2a1f4a');
+    ctx.fillStyle = g;
+    ctx.fillRect(0, 0, W, groundY);
+    for (const s of stars) {
+      ctx.globalAlpha = 0.4 + 0.6 * Math.abs(Math.sin(t * 1.5 + s.p));
+      ctx.fillStyle = '#fff';
+      ctx.beginPath();
+      ctx.arc(s.x * W, s.y * groundY, s.r, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    ctx.globalAlpha = 1;
+  }
+
+  function drawSpotlights(t) {
+    ctx.save();
+    ctx.globalCompositeOperation = 'lighter';
+    const top = groundY - H * 0.42;
+    [[W / 2 - W * 0.22, 1], [W / 2 + W * 0.22, -1]].forEach(([x, dir]) => {
+      const a = -Math.PI / 2 + dir * (0.35 + 0.3 * Math.sin(t * 1.3 + (dir > 0 ? 0 : 1.5)));
+      const len = H;
+      const spread = 0.09;
+      const g = ctx.createLinearGradient(x, top, x + Math.cos(a) * len, top + Math.sin(a) * len);
+      g.addColorStop(0, 'rgba(180,210,255,.35)');
+      g.addColorStop(1, 'rgba(180,210,255,0)');
+      ctx.fillStyle = g;
+      ctx.beginPath();
+      ctx.moveTo(x, top);
+      ctx.lineTo(x + Math.cos(a - spread) * len, top + Math.sin(a - spread) * len);
+      ctx.lineTo(x + Math.cos(a + spread) * len, top + Math.sin(a + spread) * len);
+      ctx.closePath();
+      ctx.fill();
+    });
+    ctx.restore();
+  }
+
+  function drawBuilding(t) {
+    const bw = W * 0.5, bh = H * 0.42;
+    const bx = W / 2 - bw / 2, by = groundY - bh;
+    ctx.fillStyle = '#231d38';
+    ctx.fillRect(bx, by, bw, bh);
+    ctx.fillStyle = '#2e2650';
+    ctx.fillRect(bx - 10, by - 12, bw + 20, 14);
+
+    const cols = 8, rows = 2;
+    const ww = bw / (cols * 2), wh = bh * 0.08;
+    for (let r = 0; r < rows; r++) {
+      for (let c = 0; c < cols; c++) {
+        const lit = (Math.sin(c * 7.1 + r * 3.3) + 1) / 2 > 0.35;
+        ctx.fillStyle = lit ? 'rgba(255,214,140,.85)' : '#1a1530';
+        ctx.fillRect(bx + ww * 0.5 + c * ww * 2, by + bh * 0.07 + r * wh * 1.6, ww, wh);
+      }
+    }
+
+    const soldOut = t >= SOLD_OUT_AT;
+    const doorTop = groundY - doorH;
+    const close = Math.min(1, Math.max(0, (t - SOLD_OUT_AT) / 0.6));
+
+    const spill = ctx.createRadialGradient(doorX, groundY, 0, doorX, groundY, H * 0.45);
+    spill.addColorStop(0, `rgba(255,190,110,${0.45 * (1 - close * 0.8)})`);
+    spill.addColorStop(1, 'rgba(255,190,110,0)');
+    ctx.fillStyle = spill;
+    ctx.fillRect(0, groundY, W, H - groundY);
+
+    const glow = ctx.createRadialGradient(doorX, groundY - doorH / 2, 0, doorX, groundY - doorH / 2, doorH * 1.1);
+    glow.addColorStop(0, `rgba(255,190,110,${0.35 * (1 - close * 0.8)})`);
+    glow.addColorStop(1, 'rgba(255,190,110,0)');
+    ctx.fillStyle = glow;
+    ctx.fillRect(doorX - doorH * 1.1, groundY - doorH * 1.6, doorH * 2.2, doorH * 1.6);
+
+    ctx.fillStyle = '#ffd08a';
+    ctx.fillRect(doorX - doorW / 2, doorTop, doorW, doorH);
+    ctx.fillStyle = '#3a2f5c';
+    const panel = (doorW / 2) * close;
+    ctx.fillRect(doorX - doorW / 2, doorTop, panel, doorH);
+    ctx.fillRect(doorX + doorW / 2 - panel, doorTop, panel, doorH);
+
+    drawMarquee(t, soldOut, doorTop);
+  }
+
+  function drawMarquee(t, soldOut, doorTop) {
+    const mw = Math.max(260, W * 0.24), mh = Math.max(56, H * 0.075);
+    const mx = W / 2 - mw / 2, my = doorTop - mh - H * 0.03;
+    ctx.fillStyle = '#120f22';
+    ctx.fillRect(mx, my, mw, mh);
+
+    const bulbs = 28;
+    const per = (mw * 2 + mh * 2) / bulbs;
+    for (let i = 0; i < bulbs; i++) {
+      let d = i * per, x, y;
+      if (d < mw) { x = mx + d; y = my; }
+      else if ((d -= mw) < mh) { x = mx + mw; y = my + d; }
+      else if ((d -= mh) < mw) { x = mx + mw - d; y = my + mh; }
+      else { d -= mw; x = mx; y = my + mh - d; }
+      const on = soldOut ? Math.sin(t * 12) > 0 : (i + Math.floor(t * 10)) % 3 === 0;
+      ctx.fillStyle = on ? (soldOut ? '#ff5a4a' : '#ffe08a') : '#4a3d2a';
+      ctx.beginPath();
+      ctx.arc(x, y, 3.2, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+    const flicker = t >= SOLD_OUT_AT - 0.1 && t < SOLD_OUT_AT + 0.4 && Math.random() < 0.5;
+    const showSold = soldOut && !flicker;
+    const text = showSold ? 'SOLD OUT' : 'LIVE TONIGHT';
+    ctx.save();
+    ctx.font = `800 ${Math.round(mh * 0.5)}px -apple-system,Segoe UI,Helvetica,Arial,sans-serif`;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.shadowBlur = 18;
+    ctx.shadowColor = showSold ? '#ff3b2f' : '#6dc58a';
+    ctx.fillStyle = showSold ? '#ff6a5a' : '#c8ffd9';
+    ctx.fillText(text, W / 2, my + mh / 2 + 1);
+    ctx.restore();
+  }
+
+  function drawGround() {
+    const g = ctx.createLinearGradient(0, groundY, 0, H);
+    g.addColorStop(0, '#2b2540');
+    g.addColorStop(1, '#100d1c');
+    ctx.fillStyle = g;
+    ctx.fillRect(0, groundY, W, H - groundY);
+  }
+
+  function shade(hex, k) {
+    const n = parseInt(hex.slice(1), 16);
+    const r = Math.min(255, ((n >> 16) & 255) * k);
+    const gg = Math.min(255, ((n >> 8) & 255) * k);
+    const b = Math.min(255, (n & 255) * k);
+    return `rgb(${r | 0},${gg | 0},${b | 0})`;
+  }
+
+  function drawPerson(p) {
+    const s = depth(p.y);
+    const h = 78 * scaleRef * s * p.height;
+    const x = p.x, y = p.y;
+    const doorProx = Math.max(0, 1 - Math.hypot(x - doorX, (y - groundY) * 2) / (H * 0.5));
+    const light = 0.35 + 0.75 * doorProx;
+    const swing = Math.sin(p.phase) * 0.55;
+
+    ctx.save();
+    ctx.globalAlpha = p.gone ? Math.max(0, p.fade) : 1;
+    ctx.strokeStyle = shade('#3a3550', light);
+    ctx.lineCap = 'round';
+
+    ctx.lineWidth = h * 0.09;
+    const hipY = y - h * 0.45;
+    ctx.beginPath();
+    ctx.moveTo(x, hipY); ctx.lineTo(x + Math.sin(swing) * h * 0.42, y);
+    ctx.moveTo(x, hipY); ctx.lineTo(x - Math.sin(swing) * h * 0.42, y);
+    ctx.stroke();
+
+    ctx.fillStyle = shade(p.color, light);
+    const bw = h * 0.26;
+    ctx.beginPath();
+    ctx.roundRect(x - bw / 2, y - h * 0.86, bw, h * 0.44, bw * 0.35);
+    ctx.fill();
+
+    ctx.strokeStyle = shade(p.color, light * 0.85);
+    ctx.lineWidth = h * 0.07;
+    const shY = y - h * 0.8;
+    ctx.beginPath();
+    ctx.moveTo(x - bw * 0.45, shY); ctx.lineTo(x - bw * 0.45 - Math.sin(swing) * h * 0.25, shY + h * 0.3);
+    ctx.moveTo(x + bw * 0.45, shY); ctx.lineTo(x + bw * 0.45 + Math.sin(swing) * h * 0.25, shY + h * 0.3);
+    ctx.stroke();
+
+    ctx.fillStyle = shade('#e0b090', light);
+    ctx.beginPath();
+    ctx.arc(x, y - h * 0.95, h * 0.1, 0, Math.PI * 2);
+    ctx.fill();
+
+    if (p.flash > 0) {
+      ctx.globalCompositeOperation = 'lighter';
+      const fx = x + bw * 0.6, fy = y - h * 1.12;
+      const fg = ctx.createRadialGradient(fx, fy, 0, fx, fy, h * 0.3);
+      fg.addColorStop(0, 'rgba(255,255,255,.95)');
+      fg.addColorStop(1, 'rgba(255,255,255,0)');
+      ctx.fillStyle = fg;
+      ctx.beginPath();
+      ctx.arc(fx, fy, h * 0.3, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    ctx.restore();
+  }
+
+  let prev = performance.now();
+  function frame(now) {
+    const dt = Math.min(0.05, (now - prev) / 1000);
+    prev = now;
+    simTime += dt;
+    const t = simTime;
+
+    update(t, dt);
+    drawSky(t);
+    drawSpotlights(t);
+    drawGround();
+    drawBuilding(t);
+    [...people].sort((a, b) => a.y - b.y).forEach(drawPerson);
+
+    const fadeIn = Math.max(0, 1 - t / 0.6);
+    if (fadeIn > 0) {
+      ctx.fillStyle = `rgba(0,0,0,${fadeIn})`;
+      ctx.fillRect(0, 0, W, H);
+    }
+    requestAnimationFrame(frame);
+  }
+
+  let hintTimer;
+  window.addEventListener('mousemove', () => {
+    document.body.classList.add('show-hint');
+    clearTimeout(hintTimer);
+    hintTimer = setTimeout(() => document.body.classList.remove('show-hint'), 1500);
+  });
+  window.addEventListener('keydown', (e) => {
+    if (e.key === ' ' || e.key.toLowerCase() === 'r') { e.preventDefault(); reset(); }
+    if (e.key.toLowerCase() === 'f') {
+      if (document.fullscreenElement) document.exitFullscreen();
+      else document.documentElement.requestFullscreen();
+    }
+  });
+  window.addEventListener('resize', resize);
+
+  resize();
+  reset();
+  requestAnimationFrame(frame);
+})();
+</script>
+</body>
+</html>
