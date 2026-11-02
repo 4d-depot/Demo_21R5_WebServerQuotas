@@ -647,134 +647,6 @@
 					"sizingX": "fixed",
 					"sizingY": "fixed"
 				},
-				"BtnContinueBackground17": {
-					"type": "rectangle",
-					"top": 480,
-					"left": 160,
-					"width": 120,
-					"height": 40,
-					"sizingX": "fixed",
-					"sizingY": "fixed",
-					"borderRadius": 6,
-					"stroke": "transparent",
-					"fill": "#3AA2FB"
-				},
-				"Text4": {
-					"type": "text",
-					"text": "Apply",
-					"top": 490,
-					"left": 160,
-					"width": 120,
-					"height": 0,
-					"stroke": "#FFFFFF",
-					"textAlign": "center",
-					"fontWeight": "bold",
-					"fontSize": 18,
-					"sizingX": "fixed",
-					"sizingY": "fixed"
-				},
-				"LabelInputText12": {
-					"type": "text",
-					"top": 430,
-					"left": 60,
-					"width": 240,
-					"height": 20,
-					"sizingX": "fixed",
-					"stroke": "#26334D",
-					"text": "outBytesPerMinPerSession",
-					"fontSize": 18,
-					"fontWeight": "bold",
-					"textAlign": "right",
-					"sizingY": "fixed"
-				},
-				"InputText12": {
-					"type": "input",
-					"top": 420,
-					"left": 340,
-					"width": 70,
-					"height": 40,
-					"sizingX": "fixed",
-					"dataSource": "Form:C1466.proposedQuotas.outBytesPerMinPerSession",
-					"dataSourceTypeHint": "integer",
-					"fill": "#FBFCFE",
-					"stroke": "#26334D",
-					"borderStyle": "solid",
-					"borderRadius": 8,
-					"fontSize": 14,
-					"dragging": "none",
-					"dropping": "none",
-					"enterable": true,
-					"focusable": false,
-					"textAlign": "center",
-					"verticalAlign": "middle",
-					"sizingY": "fixed"
-				},
-				"BtnContinue4": {
-					"type": "button",
-					"top": 480,
-					"left": 160,
-					"width": 120,
-					"height": 40,
-					"sizingX": "fixed",
-					"sizingY": "fixed",
-					"style": "regular",
-					"text": "GO",
-					"borderStyle": "none",
-					"fontSize": 14,
-					"fontWeight": "bold",
-					"textAlign": "center",
-					"events": [
-						"onClick"
-					],
-					"display": false,
-					"method": "ObjectMethods/BtnContinue4.4dm"
-				},
-				"BtnContinueBackground32": {
-					"type": "rectangle",
-					"top": 480,
-					"left": 300,
-					"width": 120,
-					"height": 40,
-					"sizingX": "fixed",
-					"sizingY": "fixed",
-					"borderRadius": 6,
-					"stroke": "#289FE8",
-					"fill": "#FFFFFF"
-				},
-				"Text34": {
-					"type": "text",
-					"text": "Reset",
-					"top": 490,
-					"left": 300,
-					"width": 120,
-					"height": 0,
-					"stroke": "#289FE8",
-					"textAlign": "center",
-					"fontWeight": "bold",
-					"fontSize": 18,
-					"sizingX": "fixed",
-					"sizingY": "fixed"
-				},
-				"BtnContinue32": {
-					"type": "button",
-					"top": 480,
-					"left": 300,
-					"width": 120,
-					"height": 40,
-					"sizingX": "fixed",
-					"sizingY": "fixed",
-					"style": "regular",
-					"text": "GO",
-					"borderStyle": "none",
-					"fontSize": 14,
-					"fontWeight": "bold",
-					"textAlign": "center",
-					"events": [
-						"onClick"
-					],
-					"display": false,
-					"method": "ObjectMethods/BtnContinue32.4dm"
-				},
 				"ActiveStep1": {
 					"type": "rectangle",
 					"top": 70,
@@ -845,9 +717,7 @@
 					"sizingY": "fixed"
 				}
 			},
-			"entryOrder": [
-				"BtnContinue32"
-			]
+			"entryOrder": []
 		}
 	],
 	"$4d": {
@@ -861,7 +731,7 @@
 			"View 1": {}
 		}
 	},
-	"geometryStamp": 3736,
+	"geometryStamp": 3737,
 	"windowSizingX": "fixed",
 	"windowSizingY": "fixed",
 	"formClass": "HDI2FormClass"

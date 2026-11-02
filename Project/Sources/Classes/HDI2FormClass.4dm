@@ -125,6 +125,8 @@ Function restartWebServer()
 	
 Function applyQuota($quotaName : Text; $quotaValue : Integer; $resetQuotas : Boolean)
 	
+	TRACE:C157
+	
 	var $webServerQuotas:=WEB Server:C1674().quotas
 	
 	If (btnTrace)
