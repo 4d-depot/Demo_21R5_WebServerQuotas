@@ -93,7 +93,7 @@ async function runBurst({ prefix, type, progressEl, stopButton, count, delay }) 
   burstRunning = true;
   btnVisitorBurstStart.disabled = true;
   if (btnBurstPostStart) btnBurstPostStart.disabled = true;
-  btnBurstGetStart.disabled = true;
+  if (btnBurstGetStart) btnBurstGetStart.disabled = true;
   stopButton.disabled = false;
 
   for (let index = 1; index <= count && burstRunning; index++) {
@@ -118,10 +118,10 @@ async function runBurst({ prefix, type, progressEl, stopButton, count, delay }) 
   burstRunning = false;
   btnVisitorBurstStart.disabled = false;
   if (btnBurstPostStart) btnBurstPostStart.disabled = false;
-  btnBurstGetStart.disabled = false;
+  if (btnBurstGetStart) btnBurstGetStart.disabled = false;
   btnVisitorBurstStop.disabled = true;
   if (btnBurstPostStop) btnBurstPostStop.disabled = true;
-  btnBurstGetStop.disabled = true;
+  if (btnBurstGetStop) btnBurstGetStop.disabled = true;
   await loadSessionCounts();
 }
 
@@ -144,10 +144,10 @@ btnBurstPostStart?.addEventListener('click', () => {
   startBurst('burstPost', 'POST', document.getElementById('burstPostProgress'), btnBurstPostStop);
 });
 btnBurstPostStop?.addEventListener('click', () => stopBurst(btnBurstPostStop));
-btnBurstGetStart.addEventListener('click', () => {
+btnBurstGetStart?.addEventListener('click', () => {
   startBurst('burstGet', 'GET_WITH_SIZE', document.getElementById('burstGetProgress'), btnBurstGetStop);
 });
-btnBurstGetStop.addEventListener('click', () => stopBurst(btnBurstGetStop));
+btnBurstGetStop?.addEventListener('click', () => stopBurst(btnBurstGetStop));
 document.getElementById('btnRefreshSessions')?.addEventListener('click', loadSessionCounts);
 document.getElementById('btnClearLog').addEventListener('click', () => {
   logEl.innerHTML = '';
