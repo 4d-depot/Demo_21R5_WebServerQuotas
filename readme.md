@@ -1,8 +1,17 @@
-# HDI_WebServer_RateLimitingQuotas
+# Demo_21R5_WebServerQuotas
 
-Description (4D 21 R5)
+Description 
 
 Get started with web server quotas.
+
+- Open the 4D project (4D 21 R5)
+
+- Run 4D form WebServerQuotas
+
+- Run http://127.0.0.1:8044/testQuotasTicketing.html in a browser #1
+
+- Run http://127.0.0.1:8044/ticketingLogin.html in a browser #2
+
 
 Find more information on the [blog post](https://blog.4d.com/a-4d-web-server-that-knows-when-to-say-no).
 

@@ -14,7 +14,6 @@
 	"events": [
 		"onLoad",
 		"onCloseBox",
-		"onTimer",
 		"onPageChange"
 	],
 	"method": "method.4dm",

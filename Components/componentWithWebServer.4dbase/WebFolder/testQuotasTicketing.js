@@ -36,19 +36,6 @@ function updateStats() {
   stat429El.textContent = stats.e429;
 }
 
-async function loadSessionCounts() {
-  try {
-    const response = await fetch('http://127.0.0.1:8044/getHostWebServerInfo?getQuotas=true');
-    if (!response.ok) throw new Error(`HTTP ${response.status}`);
-
-    const quotas = await response.json();
-    if (nbSessionsEl) nbSessionsEl.textContent = quotas.nbSessions ?? 0;
-    if (nbGuestSessionsEl) nbGuestSessionsEl.textContent = quotas.nbGuestSessions ?? 0;
-  } catch (error) {
-    logLine(`Unable to load the number of sessions: ${error.message}`, 'lerr');
-  }
-}
-
 async function sendRequest({ method = 'GET', body = null, querySize = null } = {}) {
   let url = BASE_URL;
   if (querySize !== null) {
